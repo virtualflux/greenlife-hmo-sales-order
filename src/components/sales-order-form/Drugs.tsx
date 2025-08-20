@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import SearchableDropdown from '../utils/SearchAbleDropdown';
 import { IProcedure } from '@/types/procedure.type';
 import { ICustomers } from '@/types/customers.type';
+import { toast } from 'react-toastify';
 
 export interface IDrugComponent {
     form: FormikProps<SalesOrderFormInput>
@@ -56,6 +57,8 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                 unit: 0,
             });
             setInventoryDrug({ name: "", item_id: "" })
+        } else {
+            toast.warn("Please fill in the drug details")
         }
     };
 
@@ -93,7 +96,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <SearchableDropdown value={inventoryDrug.item_id} isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => {
                             const selectedProcedure = drugs?.find(item => item._id == value.value)
                             setInventoryDrug({ item_id: value.value, name: value.name })
-                            setNewDrug({ ...newDrug, unit: ((selectedProcedure?.rate) ?? 0), price: ((selectedProcedure?.rate) ?? 0) * (newDrug.quantity || 1) })
+                            setNewDrug({ ...newDrug, ...(!newDrug.quantity && { quantity: 1 }), unit: ((selectedProcedure?.rate) ?? 0), price: ((selectedProcedure?.rate) ?? 0) * (newDrug.quantity || 1) })
                         }} placeholder='Select Providers procedure name' disabled={!!!form.values.customer || !!!newDrug.id} />
 
 
@@ -150,29 +153,32 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                     {/* Table Rows */}
                     {form.values.drugs.map((drug, index) => (
                         <div
-                            key={index}
-                            className="grid grid-cols-12 gap-2 items-center p-3 border rounded hover:bg-gray-50 hover:text-zinc-800 transition-colors"
+                            key={drug.id}
+                            className=" p-3 border rounded hover:bg-gray-50 hover:text-zinc-800 transition-colors overflow-x-auto"
                         >
-                            <div className="col-span-4 font-medium truncate" title={drug.name}>
-                                {drug.name}
-                            </div>
-                            <div className="col-span-2 text-center text-sm">
-                                {drug.quantity}
-                            </div>
-                            <div className="col-span-2 text-center text-sm text-gray-600 truncate" title={drug.price.toString()}>
-                                ₦{drug.unit.toFixed(2)}
-                            </div>
-                            <div className="col-span-2 text-center text-sm font-mono">
-                                ₦{(drug.price).toFixed(2)}
-                            </div>
-                            <div className="col-span-2 text-center">
-                                <button
-                                    type="button"
-                                    onClick={() => removeDrug(index)}
-                                    className="text-red-500 text-xs hover:text-red-700 px-2 py-1 border border-red-200 rounded hover:bg-red-50 hover:-ml-6 transition-all"
-                                >
-                                    <i className="fi fi-rr-trash"></i>
-                                </button>
+                            <div className='grid grid-cols-12 gap-2 items-center'>
+
+                                <div className="col-span-4 font-medium truncate" title={drug.name}>
+                                    {drug.name}
+                                </div>
+                                <div className="col-span-2 text-center text-sm">
+                                    {drug.quantity}
+                                </div>
+                                <div className="col-span-2 text-center text-sm text-gray-600 truncate" title={drug.price.toString()}>
+                                    ₦{drug.unit.toFixed(2)}
+                                </div>
+                                <div className="col-span-2 text-center text-sm font-mono">
+                                    ₦{(drug.price).toFixed(2)}
+                                </div>
+                                <div className="col-span-2 text-center inline-block">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeDrug(index)}
+                                        className="text-red-500 text-xs hover:text-red-700 px-2 py-1 border border-red-200 rounded hover:bg-red-50 hover:-ml-6 transition-all"
+                                    >
+                                        <i className="fi fi-rr-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

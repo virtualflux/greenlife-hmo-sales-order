@@ -12,6 +12,7 @@ import { LocationData } from '@/types/locations.type';
 import { ICustomers } from '@/types/customers.type';
 import SearchableDropdown from '../utils/SearchAbleDropdown';
 import { CreateSalesOrder } from '@/types/zoho-inventory-create-so.type';
+import { toast } from 'react-toastify';
 
 const SalesOrderForm = () => {
 
@@ -43,6 +44,7 @@ const SalesOrderForm = () => {
                 console.log(res)
             }).catch(error => console.log(error))
         }
+
     })
 
 
@@ -68,7 +70,10 @@ const SalesOrderForm = () => {
             }
             // console.log({ input })
             await axios.post("/api/zoho/sales-order", input)
-        } catch (error) {
+            toast.success("Sales Order was created successfully", { className: "bg-green-700" })
+            form.resetForm()
+        } catch (error: any) {
+            toast.error(error?.message || "Form was not submitted", {})
             console.error(error)
         }
     }
