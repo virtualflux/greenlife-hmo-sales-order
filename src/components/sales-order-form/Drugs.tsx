@@ -31,7 +31,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         queryKey: ["fetch-customer-drugs"], queryFn: async () => {
             const selectedCustomer = customers?.customers.find(customer => customer.zohoInventoryCustomerId == form.values.customer)
             const res = await axios.get<IProcedure[]>(`/api/db/drugs?customer=${selectedCustomer?._id}`)
-            console.log({ data: res.data })
+            // console.log({ data: res.data })
             return res.data ?? []
         },
         enabled: false

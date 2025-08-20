@@ -10,7 +10,7 @@ export class ZohoTokenHelper {
 
   static async getAccessToken() {
     // if (this.accessToken || !this.isExpiringSoon()) return this.accessToken;
-    if (!this.accessToken || this.isExpiringSoon()) {
+    if (!this.accessToken) {
       // try {
       // } catch (error) {
       //   console.log(error);

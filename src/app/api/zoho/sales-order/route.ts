@@ -16,7 +16,9 @@ export async function POST(request: NextRequest) {
 
     // console.log({ body: JSON.stringify(body, null, 2) });
     const data = await AxiosService.post(
-      `salesorders?organization_id=${process.env.ZOHO_ORG_ID}`,
+      `salesorders?organization_id=${
+        process.env.ZOHO_ORG_ID
+      }&ignore_auto_number_generation=${false}`,
       body,
       { headers: { Authorization: `Zoho-oauthtoken ${accessToken}` } }
     );

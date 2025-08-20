@@ -31,7 +31,7 @@ const SalesOrderForm = () => {
     const form = useFormik<SalesOrderFormInput>({
         initialValues: {
             description: '',
-            date: DateHelper.getCurrentDate({}),
+            date: DateHelper.getCurrentDate({ asString: true }),
             location: '',
             drugs: [],
             customer: ''
@@ -53,11 +53,11 @@ const SalesOrderForm = () => {
         }
         try {
             const input: CreateSalesOrder = {
-                customer_id: parseInt(value.customer),
-                date: new Date(value.date),
+                customer_id: value.customer,
+                date: value.date as string,
                 location_id: value.location,
                 line_items: value.drugs.map(item => ({
-                    item_id: parseInt(item.id),
+                    item_id: item.id,
                     rate: item.unit,
                     quantity: item.quantity,
                     location_id: value.location,
@@ -66,6 +66,7 @@ const SalesOrderForm = () => {
 
 
             }
+            // console.log({ input })
             await axios.post("/api/zoho/sales-order", input)
         } catch (error) {
             console.error(error)
@@ -79,11 +80,6 @@ const SalesOrderForm = () => {
         form.setFieldValue("customer", customerId)
     }
 
-
-    useEffect(() => {
-
-
-    }, [])
 
     return (
 

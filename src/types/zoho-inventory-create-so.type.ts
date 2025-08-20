@@ -1,10 +1,10 @@
 export interface CreateSalesOrder {
-  customer_id: number;
+  customer_id: string;
   line_items: LineItem[];
   salesorder_number?: string;
 
   // Optional fields
-  date?: Date;
+  date?: string;
   shipment_date?: Date;
   custom_fields?: CustomField[];
   reference_number?: string;
@@ -49,7 +49,7 @@ export interface Document {
 }
 
 export interface LineItem {
-  item_id: number;
+  item_id: string;
   name?: string;
   description?: string;
   rate: number;
