@@ -6,12 +6,13 @@ const SearchableDropdown = ({
     onSelect,
     placeholder = "Select an item",
     loadingText = "Loading...",
-    noOptionsText = "No options available"
+    noOptionsText = "No options available", disabled = false
 }: {
     data: { name: string; value: any }[]; isLoading?: boolean; onSelect: (value: { name: string; value: any }) => void;
     placeholder?: string;
     loadingText?: string;
     noOptionsText?: string;
+    disabled?: boolean
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -51,12 +52,26 @@ const SearchableDropdown = ({
         }
     };
 
+    useEffect(() => {
+        if (disabled && isOpen) {
+            setIsOpen(false);
+        }
+    }, [disabled, isOpen]);
+
+    const handleToggle = () => {
+        if (disabled) return;
+        setIsOpen(!isOpen);
+    };
+
     return (
         <div className="relative w-full" ref={dropdownRef}>
             {/* Dropdown toggle */}
             <div
-                className="flex items-center justify-between p-3 border border-gray-300 rounded-md cursor-pointer bg-primary focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                onClick={() => setIsOpen(!isOpen)}
+                className={`flex items-center justify-between p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${disabled
+                    ? 'bg-gray-100 cursor-not-allowed text-gray-400'
+                    : 'bg-white cursor-pointer text-gray-800 hover:border-gray-400'
+                    }`}
+                onClick={handleToggle}
             >
                 <span className={selectedOption ? "text-gray-800" : "text-gray-500"}>
                     {selectedOption.name ? selectedOption.name : placeholder}
@@ -73,7 +88,7 @@ const SearchableDropdown = ({
             </div>
 
             {/* Dropdown menu */}
-            {isOpen && (
+            {isOpen && !disabled && (
                 <div className="absolute z-50 w-full mt-1 bg-primary border border-gray-300 rounded-md shadow-lg">
                     {/* Search input */}
                     <div className="p-2 border-b border-gray-200">

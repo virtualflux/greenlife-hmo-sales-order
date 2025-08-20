@@ -4,13 +4,22 @@ import { InventoryItems, Item } from '@/types/zoho-inventory-item.type';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Formik, FormikBag, FormikHelpers, FormikProps } from 'formik';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SearchableDropdown from '../utils/SearchAbleDropdown';
+import { IProcedure } from '@/types/procedure.type';
+import { ICustomers } from '@/types/customers.type';
 
 export interface IDrugComponent {
     form: FormikProps<SalesOrderFormInput>
 }
 const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
+
+
+    const getCustomers = async () => {
+        const response = await axios.get<{ customers: ICustomers[] }>('/api/db/customer')
+        return (response).data ?? []
+    }
+    const { data: customers } = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
 
     const getInventoryItems = async () => {
         const response = await axios.get<{ items: Item[] }>('/api/zoho/inventory-item')
@@ -18,6 +27,15 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     }
     const { data: inventoryItem, error, isLoading } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems })
 
+    const { data: drugs, isLoading: drugLoading, refetch } = useQuery({
+        queryKey: ["fetch-customer-drugs"], queryFn: async () => {
+            const selectedCustomer = customers?.customers.find(customer => customer.zohoInventoryCustomerId == form.values.customer)
+            const res = await axios.get<IProcedure[]>(`/api/db/drugs?customer=${selectedCustomer?._id}`)
+            console.log({ data: res.data })
+            return res.data ?? []
+        },
+        enabled: false
+    })
     const [newDrug, setNewDrug] = useState<Drugs>({
         name: '',
         id: '',
@@ -43,6 +61,13 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         newDrugs.splice(index, 1);
         form.setFieldValue('drugs', newDrugs);
     };
+
+    useEffect(() => {
+        if (form.values.customer) {
+            refetch()
+        }
+    }, [form.values.customer])
+
     return (
         <div className="border-t pt-4 ">
             <h3 className="text-lg font-medium mb-2">Drugs</h3>
@@ -62,7 +87,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <label htmlFor="customerItemName" className="block text-sm font-medium ">
                             Customer Item
                         </label>
-                        <SearchableDropdown isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select Providers procedure name' />
+                        <SearchableDropdown isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select Providers procedure name' disabled={!!!form.values.customer} />
 
 
                     </div>

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik';
 import { SalesOrderFormInput } from '@/types/sales-order-form-input.type';
 import { DateHelper } from '@/utils/date-helper';
@@ -42,6 +42,19 @@ const SalesOrderForm = () => {
     })
 
 
+
+
+    const handleSelectCustomer = (
+        customerId: string
+    ) => {
+        form.setFieldValue("customer", customerId)
+    }
+
+
+    useEffect(() => {
+
+
+    }, [])
 
     return (
 
@@ -99,7 +112,7 @@ const SalesOrderForm = () => {
                     <label htmlFor="customer" className="block text-sm font-medium ">
                         Customer
                     </label>
-                    <SearchableDropdown data={customers ? customers?.customers.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => form.setFieldValue("customer", value.value)} placeholder='Select Customer' />
+                    <SearchableDropdown data={customers ? customers?.customers.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => handleSelectCustomer(value.value)} placeholder='Select Customer' />
                     {form.touched.customer && form.errors.customer ? (
                         <div className="text-red-500 text-sm">{form.errors.customer}</div>
                     ) : null}
