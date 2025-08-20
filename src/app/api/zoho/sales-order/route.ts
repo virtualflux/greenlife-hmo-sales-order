@@ -3,7 +3,7 @@ import { ZohoTokenHelper } from "@/utils/zoho-token-helper";
 import axios, { HttpStatusCode } from "axios";
 import { NextRequest } from "next/server";
 
-export async function Post(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const accessToken = await ZohoTokenHelper.getAccessToken();
     if (!request.body) {
