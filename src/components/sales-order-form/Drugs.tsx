@@ -40,7 +40,8 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         name: '',
         id: '',
         quantity: 0,
-        price: 0
+        price: 0,
+        unit: 0,
 
     });
 
@@ -51,7 +52,8 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                 name: '',
                 id: '',
                 quantity: 0,
-                price: 0
+                price: 0,
+                unit: 0,
             });
         }
     };
@@ -87,7 +89,10 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <label htmlFor="customerItemName" className="block text-sm font-medium ">
                             Customer Item
                         </label>
-                        <SearchableDropdown isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select Providers procedure name' disabled={!!!form.values.customer} />
+                        <SearchableDropdown isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => {
+                            const selectedProcedure = drugs?.find(item => item._id == value.value)
+                            setNewDrug({ ...newDrug, unit: ((selectedProcedure?.rate) ?? 0), price: ((selectedProcedure?.rate) ?? 0) * (newDrug.quantity || 1) })
+                        }} placeholder='Select Providers procedure name' disabled={!!!form.values.customer} />
 
 
                     </div>
@@ -100,7 +105,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                             type="number"
                             id="drugQuantity"
                             value={newDrug.quantity}
-                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "0") })}
+                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "0"), price: parseInt(e.target.value || "0") * newDrug.unit })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>
@@ -153,10 +158,10 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                                 {drug.quantity}
                             </div>
                             <div className="col-span-2 text-center text-sm text-gray-600 truncate" title={drug.price.toString()}>
-                                ₦{drug.price.toFixed(2)}
+                                ₦{drug.unit.toFixed(2)}
                             </div>
                             <div className="col-span-2 text-center text-sm font-mono">
-                                ₦{(drug.price * drug.quantity).toFixed(2)}
+                                ₦{(drug.price).toFixed(2)}
                             </div>
                             <div className="col-span-2 text-center">
                                 <button

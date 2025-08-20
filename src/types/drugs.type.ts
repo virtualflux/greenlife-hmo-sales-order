@@ -3,4 +3,5 @@ export interface Drugs {
   id: string;
   quantity: number;
   price: number;
+  unit: number;
 }
