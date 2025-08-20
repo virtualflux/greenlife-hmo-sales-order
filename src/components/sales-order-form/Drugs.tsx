@@ -92,7 +92,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <SearchableDropdown isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => {
                             const selectedProcedure = drugs?.find(item => item._id == value.value)
                             setNewDrug({ ...newDrug, unit: ((selectedProcedure?.rate) ?? 0), price: ((selectedProcedure?.rate) ?? 0) * (newDrug.quantity || 1) })
-                        }} placeholder='Select Providers procedure name' disabled={!!!form.values.customer} />
+                        }} placeholder='Select Providers procedure name' disabled={!!!form.values.customer || !!!newDrug.id} />
 
 
                     </div>

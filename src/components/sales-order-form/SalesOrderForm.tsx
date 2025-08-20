@@ -11,6 +11,7 @@ import axios from 'axios';
 import { LocationData } from '@/types/locations.type';
 import { ICustomers } from '@/types/customers.type';
 import SearchableDropdown from '../utils/SearchAbleDropdown';
+import { CreateSalesOrder } from '@/types/zoho-inventory-create-so.type';
 
 const SalesOrderForm = () => {
 
@@ -38,10 +39,38 @@ const SalesOrderForm = () => {
         onSubmit: (value) => {
             console.log("Submitting form"),
                 console.log(value)
+            handleSubmit(value).then(res => {
+                console.log(res)
+            }).catch(error => console.log(error))
         }
     })
 
 
+    const handleSubmit = async (value: SalesOrderFormInput) => {
+        if (!value.customer || !value.location || !value.drugs) {
+            console.error("Please fill in the forms")
+            return;
+        }
+        try {
+            const input: CreateSalesOrder = {
+                customer_id: parseInt(value.customer),
+                date: new Date(value.date),
+                location_id: value.location,
+                line_items: value.drugs.map(item => ({
+                    item_id: parseInt(item.id),
+                    rate: item.unit,
+                    quantity: item.quantity,
+                    location_id: value.location,
+                    item_total: item.price
+                }))
+
+
+            }
+            await axios.post("/api/zoho/sales-order", input)
+        } catch (error) {
+
+        }
+    }
 
 
     const handleSelectCustomer = (

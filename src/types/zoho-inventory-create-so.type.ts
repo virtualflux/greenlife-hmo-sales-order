@@ -1,7 +1,7 @@
 export interface CreateSalesOrder {
   customer_id: number;
   line_items: LineItem[];
-  salesorder_number: string;
+  salesorder_number?: string;
 
   // Optional fields
   date?: Date;
@@ -50,19 +50,19 @@ export interface Document {
 
 export interface LineItem {
   item_id: number;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
   rate: number;
   quantity: number;
-  unit: string;
-  tax_id: number;
-  tds_tax_id: string;
-  tax_name: string;
-  tax_type: string;
-  tax_percentage: number;
-  item_total: number;
+  unit?: string;
+  tax_id?: number;
+  tds_tax_id?: string;
+  tax_name?: string;
+  tax_type?: string;
+  tax_percentage?: number;
+  item_total?: number;
   location_id: string;
-  hsn_or_sac: number;
-  sat_item_key_code: number;
-  unitkey_code: string;
+  hsn_or_sac?: number;
+  sat_item_key_code?: number;
+  unitkey_code?: string;
 }

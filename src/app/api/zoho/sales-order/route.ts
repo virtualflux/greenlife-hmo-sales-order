@@ -12,8 +12,10 @@ export async function Post(request: NextRequest) {
         { status: HttpStatusCode.BadRequest }
       );
     }
+
+    console.log({ body: JSON.stringify(request.body, null, 2) });
     const data = await AxiosService.post(
-      `locations?organization_id=${process.env.ZOHO_ORG_ID}`,
+      `salesorders?organization_id=${process.env.ZOHO_ORG_ID}`,
       request.body,
       { headers: { Authorization: `Zoho-oauthtoken ${accessToken}` } }
     );
@@ -21,7 +23,6 @@ export async function Post(request: NextRequest) {
     return Response.json(
       {
         message: "Sales order created successfully",
-        saleOrder: [],
       },
       { status: HttpStatusCode.Ok }
     );
