@@ -9,25 +9,25 @@ export class ZohoTokenHelper {
   private static refreshThreshold = 30 * 1000;
 
   static async getAccessToken() {
-    if (this.accessToken || !this.isExpiringSoon()) return this.accessToken;
+    // if (this.accessToken || !this.isExpiringSoon()) return this.accessToken;
     if (!this.accessToken || this.isExpiringSoon()) {
-      try {
-        const response = await axios.post<{
-          access_token: string;
-          refresh_token: string;
-          scope: string;
-          api_domain: string;
-          token_type: string;
-          expires_in: number;
-        }>(
-          `https://accounts.zoho.com/oauth/v2/token?refresh_token=${process.env.ZOHO_REFRESH_TOKEN}&client_id=${process.env.ZOHO_CLIENT_ID}&client_secret=${process.env.ZOHO_CLIENT_SECRET}&grant_type=refresh_token`
-        );
+      // try {
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      const response = await axios.post<{
+        access_token: string;
+        refresh_token: string;
+        scope: string;
+        api_domain: string;
+        token_type: string;
+        expires_in: number;
+      }>(
+        `https://accounts.zoho.com/oauth/v2/token?refresh_token=${process.env.ZOHO_REFRESH_TOKEN}&client_id=${process.env.ZOHO_CLIENT_ID}&client_secret=${process.env.ZOHO_CLIENT_SECRET}&grant_type=refresh_token`
+      );
 
-        this.accessToken = response.data.access_token;
-        this.expiryTime = response.data.expires_in;
-      } catch (error) {
-        console.log(error);
-      }
+      this.accessToken = response.data.access_token;
+      this.expiryTime = response.data.expires_in;
       return this.accessToken;
     }
     return this.accessToken;

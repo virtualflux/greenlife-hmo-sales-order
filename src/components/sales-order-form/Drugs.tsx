@@ -169,7 +169,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                                     onClick={() => removeDrug(index)}
                                     className="text-red-500 text-xs hover:text-red-700 px-2 py-1 border border-red-200 rounded hover:bg-red-50 hover:-ml-6 transition-all"
                                 >
-                                    Remove
+                                    <i className="fi fi-rr-trash"></i>
                                 </button>
                             </div>
                         </div>
