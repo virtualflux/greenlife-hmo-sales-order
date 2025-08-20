@@ -68,7 +68,7 @@ const SalesOrderForm = () => {
             }
             await axios.post("/api/zoho/sales-order", input)
         } catch (error) {
-
+            console.error(error)
         }
     }
 

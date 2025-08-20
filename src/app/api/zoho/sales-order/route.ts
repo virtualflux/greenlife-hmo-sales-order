@@ -6,17 +6,18 @@ import { NextRequest } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const accessToken = await ZohoTokenHelper.getAccessToken();
-    if (!request.body) {
+    const body = await request.json();
+    if (!Object.keys(body as any).length) {
       return Response.json(
         { message: "Bad request: Body was not provided" },
         { status: HttpStatusCode.BadRequest }
       );
     }
 
-    console.log({ body: JSON.stringify(request.body, null, 2) });
+    // console.log({ body: JSON.stringify(body, null, 2) });
     const data = await AxiosService.post(
       `salesorders?organization_id=${process.env.ZOHO_ORG_ID}`,
-      request.body,
+      body,
       { headers: { Authorization: `Zoho-oauthtoken ${accessToken}` } }
     );
     // console.log({ data: JSON.stringify(data.data, null, 2) });
