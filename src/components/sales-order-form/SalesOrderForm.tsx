@@ -9,6 +9,8 @@ import { AxiosService } from '@/lib/axios/axios.config';
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from 'axios';
 import { LocationData } from '@/types/locations.type';
+import { ICustomers } from '@/types/customers.type';
+import SearchableDropdown from '../utils/SearchAbleDropdown';
 
 const SalesOrderForm = () => {
 
@@ -19,6 +21,11 @@ const SalesOrderForm = () => {
     const locationData = useQuery({ queryKey: ["locations"], queryFn: getLocation })
     // console.log({ locationData: locationData.data?.locations })
 
+    const getCustomers = async () => {
+        const response = await axios.get<{ customers: ICustomers[] }>('/api/db/customer')
+        return (response).data ?? []
+    }
+    const { data: customers } = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
 
     const form = useFormik<SalesOrderFormInput>({
         initialValues: {
@@ -43,7 +50,6 @@ const SalesOrderForm = () => {
 
             <form onSubmit={form.handleSubmit} className="space-y-2">
 
-                {/* Date */}
                 <div>
                     <label htmlFor="date" className="block text-sm font-medium ">
                         Date
@@ -62,7 +68,6 @@ const SalesOrderForm = () => {
                     ) : null}
                 </div>
 
-                {/* Location */}
                 <div>
                     <label htmlFor="location" className="block text-sm font-medium">
                         Location
@@ -90,48 +95,21 @@ const SalesOrderForm = () => {
                     ) : null}
                 </div>
 
-                {/* Customer */}
                 <div>
                     <label htmlFor="customer" className="block text-sm font-medium ">
                         Customer
                     </label>
-                    <input
-                        type="text"
-                        id="customer"
-                        name="customer"
-                        onChange={form.handleChange}
-                        onBlur={form.handleBlur}
-                        value={form.values.customer}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-                    />
+                    <SearchableDropdown data={customers ? customers?.customers.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => form.setFieldValue("customer", value.value)} placeholder='Select Customer' />
                     {form.touched.customer && form.errors.customer ? (
                         <div className="text-red-500 text-sm">{form.errors.customer}</div>
                     ) : null}
                 </div>
-                {/* Description */}
-                <div>
-                    <label htmlFor="description" className="block text-sm font-medium ">
-                        Description
-                    </label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        onChange={form.handleChange}
-                        onBlur={form.handleBlur}
-                        value={form.values.description}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-                    />
-                    {form.touched.description && form.errors.description ? (
-                        <div className="text-red-500 text-sm">{form.errors.description}</div>
-                    ) : null}
-                </div>
 
 
 
-                {/* Drugs */}
+
                 <DrugsComponent form={form} />
 
-                {/* Submit button */}
                 <div className="pt-4">
                     <button
                         type="submit"

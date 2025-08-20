@@ -1,22 +1,33 @@
 import { Drugs } from '@/types/drugs.type';
 import { SalesOrderFormInput } from '@/types/sales-order-form-input.type';
+import { InventoryItems, Item } from '@/types/zoho-inventory-item.type';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { Formik, FormikBag, FormikHelpers, FormikProps } from 'formik';
 import React, { useState } from 'react'
+import SearchableDropdown from '../utils/SearchAbleDropdown';
 
 export interface IDrugComponent {
     form: FormikProps<SalesOrderFormInput>
 }
 const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
 
+    const getInventoryItems = async () => {
+        const response = await axios.get<{ items: Item[] }>('/api/zoho/inventory-item')
+        return response.data.items ?? []
+    }
+    const { data: inventoryItem, error, isLoading } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems })
+
     const [newDrug, setNewDrug] = useState<Drugs>({
         name: '',
         id: '',
         quantity: 0,
         price: 0
+
     });
 
     const addDrug = () => {
-        if (newDrug.name && newDrug.id && newDrug.quantity > 0 && newDrug.price > 0) {
+        if (newDrug.name && newDrug.id && newDrug.quantity > 0 && newDrug.price >= 0) {
             form.setFieldValue('drugs', [...form.values.drugs, newDrug]);
             setNewDrug({
                 name: '',
@@ -41,29 +52,21 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                 <h4 className="font-medium">Add New Drug</h4>
                 <div className="grid grid-cols-2 gap-2">
                     <div className='col-span-2'>
-                        <label htmlFor="drugName" className="block text-sm font-medium ">
-                            Name
+                        <label htmlFor="inventoryItemName" className="block text-sm font-medium ">
+                            Select Item from Inventory
                         </label>
-                        <input
-                            type="text"
-                            id="drugName"
-                            value={newDrug.name}
-                            onChange={(e) => setNewDrug({ ...newDrug, name: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
-                        />
+                        <SearchableDropdown isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select item from inventory' />
+
                     </div>
-                    {/* <div>
-                        <label htmlFor="drugId" className="block text-sm font-medium ">
-                            ID
+                    <div className='col-span-2'>
+                        <label htmlFor="customerItemName" className="block text-sm font-medium ">
+                            Customer Item
                         </label>
-                        <input
-                            type="text"
-                            id="drugId"
-                            value={newDrug.id}
-                            onChange={(e) => setNewDrug({ ...newDrug, id: e.target.value })}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
-                        />
-                    </div> */}
+                        <SearchableDropdown isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select Providers procedure name' />
+
+
+                    </div>
+
                     <div>
                         <label htmlFor="drugQuantity" className="block text-sm font-medium ">
                             Quantity
@@ -82,10 +85,11 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         </label>
                         <input
                             type="number"
+                            disabled
                             id="drugPrice"
                             value={newDrug.price}
                             onChange={(e) => setNewDrug({ ...newDrug, price: parseFloat(e.target.value || "0") })}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
+                            className="mt-1 bg-gray-300 cursor-not-allowed block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>
                 </div>
@@ -100,7 +104,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
 
             {/* List of added drugs */}
             {form.values.drugs.length > 0 ? (
-                <div className="space-y-2 border-y-2 rounded-md p-2 shadow-2xl">
+                <div className="space-y-2 border-y-1 rounded-md p-2 shadow-2xl ">
                     {/* Table Header */}
                     <div className="grid grid-cols-12 gap-2 px-3 py-2 rounded font-medium text-sm">
                         <div className="col-span-4">Name</div>
