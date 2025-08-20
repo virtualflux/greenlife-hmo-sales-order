@@ -31,12 +31,14 @@ const logInterceptor = async (req: any) => {
 };
 
 const errorInterceptor = async (res: AxiosResponse<any>) => {
-  if (res.status == HttpStatusCode.BadRequest) {
-    console.log({ message: "BAD REQUEST", status: res.status });
-  } else if (res.status == HttpStatusCode.Unauthorized) {
-    console.log({ message: "UNAUTHORIZED", status: res.status });
-  } else {
-    console.log({ message: "INTERNAL SERVER ERROR" });
+  if (res.status >= 400) {
+    if (res.status == HttpStatusCode.BadRequest) {
+      console.log({ message: "BAD REQUEST", status: res.status });
+    } else if (res.status == HttpStatusCode.Unauthorized) {
+      console.log({ message: "UNAUTHORIZED", status: res.status });
+    } else {
+      console.log({ message: "INTERNAL SERVER ERROR" });
+    }
   }
   return res;
 };
@@ -46,6 +48,6 @@ export const AxiosService = axios.create({
   baseURL: baseUrl,
 });
 
-AxiosService.interceptors.request.use(logInterceptor);
+// AxiosService.interceptors.request.use(logInterceptor);
 
 AxiosService.interceptors.response.use(errorInterceptor);

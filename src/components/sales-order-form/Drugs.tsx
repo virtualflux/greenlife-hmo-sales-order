@@ -72,7 +72,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                             type="number"
                             id="drugQuantity"
                             value={newDrug.quantity}
-                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value) })}
+                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "0") })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>
@@ -84,7 +84,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                             type="number"
                             id="drugPrice"
                             value={newDrug.price}
-                            onChange={(e) => setNewDrug({ ...newDrug, price: parseFloat(e.target.value) })}
+                            onChange={(e) => setNewDrug({ ...newDrug, price: parseFloat(e.target.value || "0") })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>

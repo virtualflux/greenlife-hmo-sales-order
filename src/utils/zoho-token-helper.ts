@@ -1,17 +1,18 @@
 import { AxiosService } from "@/lib/axios/axios.config";
 import { DateHelper } from "./date-helper";
+import axios from "axios";
 
 export class ZohoTokenHelper {
-  static accessToken: string = "";
-  static expiryTime = 0;
+  private static accessToken: string = "";
+  private static expiryTime = 0;
 
-  static refreshThreshold = 30 * 1000;
+  private static refreshThreshold = 30 * 1000;
 
   static async getAccessToken() {
     if (this.accessToken || !this.isExpiringSoon()) return this.accessToken;
     if (!this.accessToken || this.isExpiringSoon()) {
       try {
-        const response = await AxiosService.post<{
+        const response = await axios.post<{
           access_token: string;
           refresh_token: string;
           scope: string;
@@ -19,10 +20,7 @@ export class ZohoTokenHelper {
           token_type: string;
           expires_in: number;
         }>(
-          `token?refresh_token=${process.env.ZOHO_REFRESH_TOKEN}&client_id=${process.env.ZOHO_CLIENT_ID}&client_secret=${process.env.ZOHO_CLIENT_SECRET}&grant_type=refresh_token`,
-          {
-            baseURL: "https://accounts.zoho.com/oauth/v2/",
-          }
+          `https://accounts.zoho.com/oauth/v2/token?refresh_token=${process.env.ZOHO_REFRESH_TOKEN}&client_id=${process.env.ZOHO_CLIENT_ID}&client_secret=${process.env.ZOHO_CLIENT_SECRET}&grant_type=refresh_token`
         );
 
         this.accessToken = response.data.access_token;
