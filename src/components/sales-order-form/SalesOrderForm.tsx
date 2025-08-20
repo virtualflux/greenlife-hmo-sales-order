@@ -141,7 +141,7 @@ const SalesOrderForm = () => {
                     <label htmlFor="customer" className="block text-sm font-medium ">
                         Customer
                     </label>
-                    <SearchableDropdown data={customers ? customers?.customers.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => handleSelectCustomer(value.value)} placeholder='Select Customer' />
+                    <SearchableDropdown value={form.values.customer} data={customers ? customers?.customers.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => handleSelectCustomer(value.value)} placeholder='Select Customer' />
                     {form.touched.customer && form.errors.customer ? (
                         <div className="text-red-500 text-sm">{form.errors.customer}</div>
                     ) : null}

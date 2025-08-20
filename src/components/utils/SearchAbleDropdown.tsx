@@ -2,12 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 
 const SearchableDropdown = ({
     data,
+    value,
     isLoading = false,
     onSelect,
     placeholder = "Select an item",
     loadingText = "Loading...",
     noOptionsText = "No options available", disabled = false
 }: {
+    value: string
     data: { name: string; value: any }[]; isLoading?: boolean; onSelect: (value: { name: string; value: any }) => void;
     placeholder?: string;
     loadingText?: string;
@@ -16,7 +18,7 @@ const SearchableDropdown = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedOption, setSelectedOption] = useState({ name: "", value: "" });
+    const [selectedOption, setSelectedOption] = useState({ name: "", value });
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Filter options based on search term
@@ -57,6 +59,13 @@ const SearchableDropdown = ({
             setIsOpen(false);
         }
     }, [disabled, isOpen]);
+
+    useEffect(() => {
+        if (value == "") {
+            setSelectedOption({ name: "", value: "" })
+        }
+        return
+    }, [value])
 
     const handleToggle = () => {
         if (disabled) return;

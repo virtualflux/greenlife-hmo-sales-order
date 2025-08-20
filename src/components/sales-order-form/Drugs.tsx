@@ -14,7 +14,7 @@ export interface IDrugComponent {
 }
 const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
 
-
+    const [inventoryDrug, setInventoryDrug] = useState({ name: "", item_id: "" })
     const getCustomers = async () => {
         const response = await axios.get<{ customers: ICustomers[] }>('/api/db/customer')
         return (response).data ?? []
@@ -55,6 +55,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                 price: 0,
                 unit: 0,
             });
+            setInventoryDrug({ name: "", item_id: "" })
         }
     };
 
@@ -82,15 +83,16 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <label htmlFor="inventoryItemName" className="block text-sm font-medium ">
                             Select Item from Inventory
                         </label>
-                        <SearchableDropdown isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select item from inventory' />
+                        <SearchableDropdown value={newDrug.id} isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select item from inventory' />
 
                     </div>
                     <div className='col-span-2'>
                         <label htmlFor="customerItemName" className="block text-sm font-medium ">
                             Customer Item
                         </label>
-                        <SearchableDropdown isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => {
+                        <SearchableDropdown value={inventoryDrug.item_id} isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => {
                             const selectedProcedure = drugs?.find(item => item._id == value.value)
+                            setInventoryDrug({ item_id: value.value, name: value.name })
                             setNewDrug({ ...newDrug, unit: ((selectedProcedure?.rate) ?? 0), price: ((selectedProcedure?.rate) ?? 0) * (newDrug.quantity || 1) })
                         }} placeholder='Select Providers procedure name' disabled={!!!form.values.customer || !!!newDrug.id} />
 
