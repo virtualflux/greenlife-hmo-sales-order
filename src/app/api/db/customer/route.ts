@@ -1,0 +1,12 @@
+import { NextRequest } from "next/server";
+import client from "@/db/db.config";
+export async function GET(request: NextRequest) {
+  try {
+    const db = client.db("greenlife");
+    const hmos = await db.collection("hmos").find({}).toArray();
+    // console.log({ hmos: JSON.stringify(hmos, null, 2) });
+    return Response.json({ customers: hmos });
+  } catch (e) {
+    console.error(e);
+  }
+}
