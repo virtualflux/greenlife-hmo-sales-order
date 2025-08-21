@@ -111,14 +111,21 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         }
         const item = res.data.item
         console.log({ item })
-        const pickedLocation = item.locations.find((loc) => loc.location_stock_on_hand)
+        const pickedLocation = item.locations.find((loc) => loc.location_id == form.values.location)
 
 
-        if (!pickedLocation) {
+        if (!pickedLocation || !pickedLocation.location_stock_on_hand) {
             toast.warn(`Location doesn't have this item`)
+            setNewDrug({
+                name: '',
+                id: '',
+                quantity: 0,
+                price: 0,
+                unit: 0,
+            })
             return
         }
-
+        console.log(pickedLocation)
         setNewDrug({ ...newDrug, id: value.id, name: value.name })
     }
 
