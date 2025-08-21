@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik';
 import { SalesOrderFormInput } from '@/types/sales-order-form-input.type';
-import { DateHelper } from '@/utils/date-helper';
+import { DateHelper } from '@/utils/helper/date-helper';
 import { Drugs } from '@/types/drugs.type';
 import DrugsComponent from './Drugs';
 import { AxiosService } from '@/lib/axios/axios.config';
@@ -14,10 +14,11 @@ import { ICustomers } from '@/types/customers.type';
 import SearchableDropdown from '../utils/SearchAbleDropdown';
 import { CreateSalesOrder } from '@/types/zoho-inventory-create-so.type';
 import { toast } from 'react-toastify';
+import { Contact } from '@/types/get-zoho-inventory-customer.type';
+import useGetAllContacts from '@/utils/query/get-all-customers-hook.query';
 
 const SalesOrderForm = () => {
 
-    const [allCustomers, setAllCustomers] = useState<ICustomers[]>([])
     const getLocation = async () => {
         const response = await axios.get<LocationData>('/api/zoho/location')
         return (response).data.locations ?? []
@@ -25,11 +26,62 @@ const SalesOrderForm = () => {
     const locationData = useQuery({ queryKey: ["locations"], queryFn: getLocation })
     // console.log({ locationData: locationData.data?.locations })
 
+    // const { customers, error: customerError, isLoading: customerLoading } = useGetAllContacts()
+
     const getCustomers = async () => {
-        const response = await axios.get<{ customers: ICustomers[] }>('/api/db/customer')
-        return (response).data ?? []
-    }
-    const { data: customers } = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
+        let availableContacts: Pick<
+            ICustomers,
+            "zohoInventoryCustomerId" | "providerName"
+        >[] = [];
+        const customersTracker: Record<string, number> = {};
+        const response = await axios.get<{ customers: ICustomers[] }>(
+            "/api/db/customer"
+        );
+        if (response?.data) {
+            response.data.customers.forEach((customer) => {
+                customersTracker[customer.zohoInventoryCustomerId] = customersTracker[
+                    customer.zohoInventoryCustomerId
+                ]
+                    ? customersTracker[customer.zohoInventoryCustomerId] + 1
+                    : 1;
+                return {
+                    zohoInventoryCustomerId: customer.zohoInventoryCustomerId,
+                    providerName: customer.providerName,
+                };
+            });
+        }
+        const inventoryContactRes = await axios.get<Contact[]>(
+            "/api/zoho/contacts"
+        );
+        if (inventoryContactRes.data) {
+            availableContacts = inventoryContactRes.data.map((contact) => {
+                customersTracker[contact.contact_id] = customersTracker[
+                    contact.contact_id
+                ]
+                    ? customersTracker[contact.contact_id] + 1
+                    : 1;
+                return {
+                    zohoInventoryCustomerId: contact.contact_id.toString(),
+                    providerName: contact.company_name,
+                };
+            });
+        }
+
+        //TODO: DEACTIVATE CUSTOMERS IN DATABASE THAT ARE NOT IN ZOHO INVENTORY
+        // const shouldDeleteIds = Object.entries(customersTracker).map(([key, value]) => {
+        //     if (value == 1) return key
+        // })
+        // console.log({ shouldDeleteIds })
+
+        console.log(customersTracker);
+
+        return availableContacts;
+    };
+    const {
+        data: customers,
+        isLoading,
+        error,
+    } = useQuery({ queryKey: ["customers"], queryFn: getCustomers });
 
     const form = useFormik<SalesOrderFormInput>({
         initialValues: {
@@ -146,7 +198,7 @@ const SalesOrderForm = () => {
                     <label htmlFor="customer" className="block text-sm font-medium ">
                         Customer
                     </label>
-                    <SearchableDropdown value={form.values.customer} data={customers ? customers?.customers.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => handleSelectCustomer(value.value)} placeholder='Select Customer' />
+                    <SearchableDropdown value={form.values.customer} data={customers ? customers?.map(customer => ({ name: customer.providerName.toUpperCase(), value: customer.zohoInventoryCustomerId })) : []} onSelect={(value) => handleSelectCustomer(value.value)} placeholder='Select Customer' />
                     {form.touched.customer && form.errors.customer ? (
                         <div className="text-red-500 text-sm">{form.errors.customer}</div>
                     ) : null}
@@ -157,7 +209,7 @@ const SalesOrderForm = () => {
 
                 <DrugsComponent form={form} />
 
-                  <Link href='/contacts' className='underline'>Upload Customer Data</Link>
+                <Link href='/contacts' className='underline'>Upload Customer Data</Link>
                 <div className="pt-4">
                     <button
                         type="submit"

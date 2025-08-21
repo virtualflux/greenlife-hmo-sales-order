@@ -31,54 +31,22 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         const response = await axios.get<{ customers: ICustomers[] }>('/api/db/customer')
         return (response).data ?? []
     }
-    const { data: customers } = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
+    const { data: customers } = useQuery({ queryKey: ["db-customers"], queryFn: getCustomers })
 
 
     const getInventoryItems = async () => {
 
         const response = await axios.get<{ items: Item[] }>('/api/zoho/inventory-item')
-        // if (form.values.location) {
-        //     return response.data.items.filter(item => {
-        //         const pickedItemLocation = item.locations.find(loc => loc.location_id == form.values.location)
-        //         if (pickedItemLocation?.location_stock_on_hand) return true
-        //         return false
-
-        //     })
-        // }
         return response.data.items ?? []
     }
     const { data: inventoryItems, error, isLoading, refetch: inventoryRefetch } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems, })
-
-    // const getSingleInventoryItem = async (id: string) => {
-    //     let item: Item = {} as any
-    //     if (id) {
-    //         const res = await axios.get<{ item: Item }>(`/api/zoho/inventory-item/${id}`)
-
-    //         if (!res?.data) {
-    //             toast.error("Something went wrong this item was not found")
-    //             return
-    //         }
-    //         item = res.data.item
-    //     }
-    //     return item
-
-    // }
-
-
-    // const item = useQuery({ queryKey: ["single-inventory-item"], queryFn: () => getSingleInventoryItem(newDrug.id) })
-
-    // useEffect(() => {
-    //     if (newDrug.id) {
-    //         item.refetch()
-    //     }
-    // }, [newDrug.id])
 
     const { data: drugs, isLoading: drugLoading, refetch } = useQuery({
         queryKey: ["fetch-customer-drugs"], queryFn: async () => {
             const selectedCustomer = customers?.customers.find(customer => customer.zohoInventoryCustomerId == form.values.customer)
             const res = await axios.get<IProcedure[]>(`/api/db/drugs?customer=${selectedCustomer?._id}`)
             // console.log({ data: res.data })
-            return res.data ?? []
+            return res?.data ?? []
         },
         enabled: false
     })
@@ -132,7 +100,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         // console.log({ pickedLocation })
         const unitPrice = pickedLocation.initial_stock_rate
         setInventoryDrug(prev => ({ ...prev, name: item.name, item_id: item.item_id.toString(), unit: pickedLocation.initial_stock_rate, locationQty: parseFloat(pickedLocation.location_stock_on_hand) }))
-        setNewDrug({ ...newDrug, id: value.id, name: value.name, unit: item.rate, price: unitPrice * (newDrug.quantity || 1), quantity: newDrug.quantity ? newDrug.quantity : 1 })
+        setNewDrug({ ...newDrug, id: value.id, name: value.name, unit: item.rate, price: parseFloat((unitPrice * (newDrug.quantity || 1)).toFixed(2)), quantity: newDrug.quantity ? newDrug.quantity : 1 })
     }
 
     const removeDrug = (index: number) => {
@@ -195,7 +163,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                             type="number"
                             id="drugQuantity"
                             value={newDrug.quantity}
-                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "0"), price: parseInt(e.target.value || "0") * newDrug.unit })}
+                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "0"), price: parseFloat((newDrug.unit * (newDrug.quantity || 1)).toFixed(2)) })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>
@@ -225,17 +193,14 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
             {/* List of added drugs */}
             {form.values.drugs.length > 0 ? (
                 <div className="space-y-2 border-y-1 rounded-md p-2 shadow-2xl ">
-                    {/* Table Header */}
                     <div className="grid grid-cols-12 gap-2 px-3 py-2 rounded font-medium text-sm">
                         <div className="col-span-4">Name</div>
-                        {/* <div className="col-span-2 text-center">ID</div> */}
                         <div className="col-span-2 text-center">Quantity</div>
                         <div className="col-span-2 text-center">Unit Price</div>
                         <div className="col-span-2 text-center">Price</div>
                         <div className="col-span-2 text-center">Action</div>
                     </div>
 
-                    {/* Table Rows */}
                     {form.values.drugs.map((drug, index) => (
                         <div
                             key={drug.id}

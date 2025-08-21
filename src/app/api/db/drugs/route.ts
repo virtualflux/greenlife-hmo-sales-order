@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchQuery = request.nextUrl.searchParams;
     const customer = searchQuery.get("customer");
-    console.log({ customer });
+    // console.log({ customer });
     const db = client.db("greenlife");
     if (customer) {
       const procedures = await db

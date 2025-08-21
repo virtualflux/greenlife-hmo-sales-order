@@ -1,6 +1,6 @@
 import { AxiosService } from "@/lib/axios/axios.config";
 import { InventoryItems } from "@/types/zoho-inventory-item.type";
-import { ZohoTokenHelper } from "@/utils/zoho-token-helper";
+import { ZohoTokenHelper } from "@/utils/helper/zoho-token-helper";
 import axios, { HttpStatusCode } from "axios";
 import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
