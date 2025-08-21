@@ -9,7 +9,7 @@ import SearchableDropdown from '../utils/SearchAbleDropdown';
 import { IProcedure } from '@/types/procedure.type';
 import { ICustomers } from '@/types/customers.type';
 import { toast } from 'react-toastify';
-
+import { isValidObjectId } from '@/utils/helper/is-valid-objectid-helper';
 export interface IDrugComponent {
     form: FormikProps<SalesOrderFormInput>
 }
@@ -44,9 +44,12 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     const { data: drugs, isLoading: drugLoading, refetch } = useQuery({
         queryKey: ["fetch-customer-drugs"], queryFn: async () => {
             const selectedCustomer = customers?.customers.find(customer => customer.zohoInventoryCustomerId == form.values.customer)
-            const res = await axios.get<IProcedure[]>(`/api/db/drugs?customer=${selectedCustomer?._id}`)
-            // console.log({ data: res.data })
-            return res?.data ?? []
+            if (selectedCustomer?._id && isValidObjectId(selectedCustomer?._id)) {
+                const res = await axios.get<IProcedure[]>(`/api/db/drugs?customer=${selectedCustomer?._id}`)
+                // console.log({ data: res.data })
+                return res?.data ?? []
+            }
+            return []
         },
         enabled: false
     })
@@ -100,7 +103,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         // console.log({ pickedLocation })
         const unitPrice = pickedLocation.initial_stock_rate
         setInventoryDrug(prev => ({ ...prev, name: item.name, item_id: item.item_id.toString(), unit: pickedLocation.initial_stock_rate, locationQty: parseFloat(pickedLocation.location_stock_on_hand) }))
-        setNewDrug({ ...newDrug, id: value.id, name: value.name, unit: item.rate, price: parseFloat((unitPrice * (newDrug.quantity || 1)).toFixed(2)), quantity: newDrug.quantity ? newDrug.quantity : 1 })
+        setNewDrug({ ...newDrug, id: value.id, name: value.name, unit: pickedLocation.initial_stock_rate, price: parseFloat((unitPrice * (newDrug.quantity || 1)).toFixed(2)), quantity: newDrug.quantity ? newDrug.quantity : 1 })
     }
 
     const removeDrug = (index: number) => {
