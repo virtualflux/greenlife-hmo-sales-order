@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 
 const SalesOrderForm = () => {
 
+    const [allCustomers, setAllCustomers] = useState<ICustomers[]>([])
     const getLocation = async () => {
         const response = await axios.get<LocationData>('/api/zoho/location')
         return (response).data.locations ?? []
@@ -58,6 +59,7 @@ const SalesOrderForm = () => {
                 customer_id: value.customer,
                 date: value.date as string,
                 location_id: value.location,
+                next_action: "submit",
                 line_items: value.drugs.map(item => ({
                     item_id: item.id,
                     rate: item.unit,

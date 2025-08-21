@@ -57,4 +57,5 @@ export interface Location {
   location_stock_on_hand: string;
   location_available_stock: string;
   location_actual_available_stock: string;
+  initial_stock_rate: number;
 }

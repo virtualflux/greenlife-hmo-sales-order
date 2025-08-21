@@ -4,6 +4,7 @@ export interface CreateSalesOrder {
   salesorder_number?: string;
 
   // Optional fields
+  next_action?: string;
   date?: string;
   shipment_date?: Date;
   custom_fields?: CustomField[];

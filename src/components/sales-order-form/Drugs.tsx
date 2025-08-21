@@ -24,7 +24,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
 
     });
 
-    const [inventoryDrug, setInventoryDrug] = useState({ name: "", item_id: "", locationQty: 0 })
+    const [inventoryDrug, setInventoryDrug] = useState({ name: "", item_id: "", locationQty: 0, unit: 0 })
     const [checkingAvailability, setCheckAvailabilty] = useState<boolean | undefined>(undefined)
 
     const getCustomers = async () => {
@@ -96,7 +96,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                 price: 0,
                 unit: 0,
             });
-            setInventoryDrug({ ...inventoryDrug, name: "", item_id: "" })
+            setInventoryDrug({ name: "", item_id: "", locationQty: 0, unit: 0 })
         } else {
             toast.warn("Please fill in the drug details")
         }
@@ -130,8 +130,9 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
             return
         }
         // console.log({ pickedLocation })
-        setInventoryDrug(prev => ({ ...prev, locationQty: parseFloat(pickedLocation.location_stock_on_hand) }))
-        setNewDrug({ ...newDrug, id: value.id, name: value.name })
+        const unitPrice = pickedLocation.initial_stock_rate
+        setInventoryDrug(prev => ({ ...prev, name: item.name, item_id: item.item_id.toString(), unit: pickedLocation.initial_stock_rate, locationQty: parseFloat(pickedLocation.location_stock_on_hand) }))
+        setNewDrug({ ...newDrug, id: value.id, name: value.name, unit: item.rate, price: unitPrice * (newDrug.quantity || 1), quantity: newDrug.quantity ? newDrug.quantity : 1 })
     }
 
     const removeDrug = (index: number) => {
@@ -180,7 +181,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <SearchableDropdown value={inventoryDrug.item_id} isLoading={isLoading} data={drugs ? drugs.map(item => ({ name: item.name, value: item._id })) : []} onSelect={(value) => {
                             const selectedProcedure = drugs?.find(item => item._id == value.value)
                             setInventoryDrug({ ...inventoryDrug, item_id: value.value, name: value.name })
-                            setNewDrug({ ...newDrug, ...(!newDrug.quantity && { quantity: 1 }), unit: ((selectedProcedure?.rate) ?? 0), price: ((selectedProcedure?.rate) ?? 0) * (newDrug.quantity || 1) })
+                            setNewDrug({ ...newDrug, ...(!newDrug.quantity && { quantity: 1 }), unit: ((selectedProcedure?.rate) ?? newDrug.unit), price: ((selectedProcedure?.rate) ?? newDrug.unit) * (newDrug.quantity) })
                         }} placeholder='Select Providers procedure name' disabled={!!!form.values.customer || !!!newDrug.id} />
 
 
