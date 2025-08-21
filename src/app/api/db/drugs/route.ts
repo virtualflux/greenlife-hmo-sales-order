@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     console.error(e);
     return Response.json(
       { message: "Internal Server error, customer was not fetched" },
-      { status: HttpStatusCode.BadRequest }
+      { status: HttpStatusCode.InternalServerError }
     );
   }
 }

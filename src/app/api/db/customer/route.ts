@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import client from "@/db/db.config";
+import { HttpStatusCode } from "axios";
 export async function GET(request: NextRequest) {
   try {
     const db = client.db("admin");
@@ -8,5 +9,9 @@ export async function GET(request: NextRequest) {
     return Response.json({ customers: hmos });
   } catch (e) {
     console.error(e);
+    return Response.json(
+      { message: "Internal Server error, customer was not fetched" },
+      { status: HttpStatusCode.InternalServerError }
+    );
   }
 }
