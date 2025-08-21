@@ -22,20 +22,27 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     }
     const { data: customers } = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
 
+
     const getInventoryItems = async () => {
 
         const response = await axios.get<{ items: Item[] }>('/api/zoho/inventory-item')
         if (form.values.location) {
             return response.data.items.filter(item => {
                 const pickedItemLocation = item.locations.find(loc => loc.location_id == form.values.location)
-                if (pickedItemLocation) return true
+                if (pickedItemLocation?.location_stock_on_hand) return true
                 return false
 
             })
         }
-        return response.data.items ?? []
+        // return response.data.items ?? []
     }
-    const { data: inventoryItem, error, isLoading } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems })
+    const { data: inventoryItem, error, isLoading, refetch: inventoryRefetch } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems, })
+
+    useEffect(() => {
+        if (form.values.location) {
+            inventoryRefetch()
+        }
+    }, [form.values.location])
 
     const { data: drugs, isLoading: drugLoading, refetch } = useQuery({
         queryKey: ["fetch-customer-drugs"], queryFn: async () => {
