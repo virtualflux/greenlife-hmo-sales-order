@@ -15,7 +15,17 @@ export interface IDrugComponent {
 }
 const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
 
+    const [newDrug, setNewDrug] = useState<Drugs>({
+        name: '',
+        id: '',
+        quantity: 0,
+        price: 0,
+        unit: 0,
+
+    });
+
     const [inventoryDrug, setInventoryDrug] = useState({ name: "", item_id: "" })
+
     const getCustomers = async () => {
         const response = await axios.get<{ customers: ICustomers[] }>('/api/db/customer')
         return (response).data ?? []
@@ -26,23 +36,41 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     const getInventoryItems = async () => {
 
         const response = await axios.get<{ items: Item[] }>('/api/zoho/inventory-item')
-        if (form.values.location) {
-            return response.data.items.filter(item => {
-                const pickedItemLocation = item.locations.find(loc => loc.location_id == form.values.location)
-                if (pickedItemLocation?.location_stock_on_hand) return true
-                return false
+        // if (form.values.location) {
+        //     return response.data.items.filter(item => {
+        //         const pickedItemLocation = item.locations.find(loc => loc.location_id == form.values.location)
+        //         if (pickedItemLocation?.location_stock_on_hand) return true
+        //         return false
 
-            })
-        }
-        // return response.data.items ?? []
+        //     })
+        // }
+        return response.data.items ?? []
     }
     const { data: inventoryItem, error, isLoading, refetch: inventoryRefetch } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems, })
 
-    useEffect(() => {
-        if (form.values.location) {
-            inventoryRefetch()
-        }
-    }, [form.values.location])
+    // const getSingleInventoryItem = async (id: string) => {
+    //     let item: Item = {} as any
+    //     if (id) {
+    //         const res = await axios.get<{ item: Item }>(`/api/zoho/inventory-item/${id}`)
+
+    //         if (!res?.data) {
+    //             toast.error("Something went wrong this item was not found")
+    //             return
+    //         }
+    //         item = res.data.item
+    //     }
+    //     return item
+
+    // }
+
+
+    // const item = useQuery({ queryKey: ["single-inventory-item"], queryFn: () => getSingleInventoryItem(newDrug.id) })
+
+    // useEffect(() => {
+    //     if (newDrug.id) {
+    //         item.refetch()
+    //     }
+    // }, [newDrug.id])
 
     const { data: drugs, isLoading: drugLoading, refetch } = useQuery({
         queryKey: ["fetch-customer-drugs"], queryFn: async () => {
@@ -53,14 +81,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         },
         enabled: false
     })
-    const [newDrug, setNewDrug] = useState<Drugs>({
-        name: '',
-        id: '',
-        quantity: 0,
-        price: 0,
-        unit: 0,
 
-    });
 
     const addDrug = () => {
         if (newDrug.name && newDrug.id && newDrug.quantity > 0 && newDrug.price >= 0) {
@@ -79,6 +100,27 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
             toast.warn("Please fill in the drug details")
         }
     };
+
+    const handleInventoryItemSelect = async (value: { name: string; id: string }) => {
+
+        const res = await axios.get<{ item: Item }>(`/api/zoho/inventory-item/${value.id}`)
+
+        if (!res?.data) {
+            toast.error("Something went wrong this item was not found")
+            return
+        }
+        const item = res.data.item
+        console.log({ item })
+        const pickedLocation = item.locations.find((loc) => loc.location_stock_on_hand)
+
+
+        if (!pickedLocation) {
+            toast.warn(`Location doesn't have this item`)
+            return
+        }
+
+        setNewDrug({ ...newDrug, id: value.id, name: value.name })
+    }
 
     const removeDrug = (index: number) => {
         const newDrugs = [...form.values.drugs];
@@ -104,13 +146,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <label htmlFor="inventoryItemName" className="block text-sm font-medium ">
                             Select Item from Inventory
                         </label>
-                        <SearchableDropdown value={newDrug.id} isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => {
-                            if (!form.values.location) {
-                                toast.warn("Please select a location")
-                                return
-                            }
-                            setNewDrug({ ...newDrug, name: value.name, id: value.value })
-                        }} placeholder='Select item from inventory' />
+                        <SearchableDropdown value={newDrug.id} isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => { handleInventoryItemSelect({ name: value.name, id: value.value }) }} placeholder='Select item from inventory' />
 
                     </div>
                     <div className='col-span-2'>
