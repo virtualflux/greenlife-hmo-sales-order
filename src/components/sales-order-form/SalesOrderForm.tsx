@@ -62,6 +62,7 @@ const SalesOrderForm = () => {
                     item_id: item.id,
                     rate: item.unit,
                     quantity: item.quantity,
+                    description: item.name,
                     location_id: value.location,
                     item_total: item.price
                 }))

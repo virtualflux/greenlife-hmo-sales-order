@@ -49,6 +49,8 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     const addDrug = () => {
         if (newDrug.name && newDrug.id && newDrug.quantity > 0 && newDrug.price >= 0) {
             form.setFieldValue('drugs', [...form.values.drugs, newDrug]);
+            const description = form.values.description
+            form.setFieldValue("description", (description ? description + "," + newDrug.name : newDrug.name))
             setNewDrug({
                 name: '',
                 id: '',
