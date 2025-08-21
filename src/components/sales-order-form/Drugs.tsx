@@ -23,7 +23,16 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     const { data: customers } = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
 
     const getInventoryItems = async () => {
+
         const response = await axios.get<{ items: Item[] }>('/api/zoho/inventory-item')
+        if (form.values.location) {
+            return response.data.items.filter(item => {
+                const pickedItemLocation = item.locations.find(loc => loc.location_id == form.values.location)
+                if (pickedItemLocation) return true
+                return false
+
+            })
+        }
         return response.data.items ?? []
     }
     const { data: inventoryItem, error, isLoading } = useQuery({ queryKey: ["inventory-items"], queryFn: getInventoryItems })
@@ -88,7 +97,13 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         <label htmlFor="inventoryItemName" className="block text-sm font-medium ">
                             Select Item from Inventory
                         </label>
-                        <SearchableDropdown value={newDrug.id} isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => setNewDrug({ ...newDrug, name: value.name, id: value.value })} placeholder='Select item from inventory' />
+                        <SearchableDropdown value={newDrug.id} isLoading={isLoading} data={inventoryItem ? inventoryItem.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => {
+                            if (!form.values.location) {
+                                toast.warn("Please select a location")
+                                return
+                            }
+                            setNewDrug({ ...newDrug, name: value.name, id: value.value })
+                        }} placeholder='Select item from inventory' />
 
                     </div>
                     <div className='col-span-2'>
