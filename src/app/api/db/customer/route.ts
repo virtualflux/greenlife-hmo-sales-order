@@ -3,7 +3,7 @@ import client from "@/db/db.config";
 import { HttpStatusCode } from "axios";
 export async function GET(request: NextRequest) {
   try {
-    const db = client.db("admin");
+    const db = client.db("greenlife");
     const hmos = await db.collection("hmos").find({}).toArray();
     // console.log({ hmos: JSON.stringify(hmos, null, 2) });
     return Response.json({ customers: hmos });

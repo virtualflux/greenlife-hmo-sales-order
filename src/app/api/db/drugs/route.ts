@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const searchQuery = request.nextUrl.searchParams;
     const customer = searchQuery.get("customer");
     console.log({ customer });
-    const db = client.db("admin");
+    const db = client.db("greenlife");
     if (customer) {
       const procedures = await db
         .collection("procedures")
