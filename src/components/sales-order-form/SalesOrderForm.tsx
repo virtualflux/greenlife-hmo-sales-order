@@ -1,4 +1,5 @@
 "use client"
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik';
 import { SalesOrderFormInput } from '@/types/sales-order-form-input.type';
@@ -156,6 +157,7 @@ const SalesOrderForm = () => {
 
                 <DrugsComponent form={form} />
 
+                  <Link href='/contacts' className='underline'>Upload Customer Data</Link>
                 <div className="pt-4">
                     <button
                         type="submit"
