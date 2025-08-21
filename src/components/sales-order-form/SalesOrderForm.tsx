@@ -91,7 +91,7 @@ const SalesOrderForm = () => {
     return (
 
         <div className="max-w-md mx-auto p-6 bg-primary rounded-lg shadow-md text-zinc-800">
-            <h2 className="text-2xl font-bold mb-6 text-center">Sales Order Form</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">HMO Prescription Validation Form</h2>
 
             <form onSubmit={form.handleSubmit} className="space-y-2">
 

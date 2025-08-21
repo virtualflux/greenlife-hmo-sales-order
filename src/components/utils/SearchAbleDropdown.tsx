@@ -7,7 +7,7 @@ const SearchableDropdown = ({
     onSelect,
     placeholder = "Select an item",
     loadingText = "Loading...",
-    noOptionsText = "No options available", disabled = false
+    noOptionsText = "No options available", disabled = false,
 }: {
     value: string
     data: { name: string; value: any }[]; isLoading?: boolean; onSelect: (value: { name: string; value: any }) => void;
@@ -60,12 +60,7 @@ const SearchableDropdown = ({
         }
     }, [disabled, isOpen]);
 
-    useEffect(() => {
-        if (value == "") {
-            setSelectedOption({ name: "", value: "" })
-        }
-        return
-    }, [value])
+
 
     const handleToggle = () => {
         if (disabled) return;
@@ -74,7 +69,6 @@ const SearchableDropdown = ({
 
     return (
         <div className="relative w-full" ref={dropdownRef}>
-            {/* Dropdown toggle */}
             <div
                 className={`flex items-center justify-between p-3 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${disabled
                     ? 'bg-gray-100 cursor-not-allowed text-gray-400'
@@ -96,10 +90,9 @@ const SearchableDropdown = ({
                 </svg>
             </div>
 
-            {/* Dropdown menu */}
             {isOpen && !disabled && (
                 <div className="absolute z-50 w-full mt-1 bg-primary border border-gray-300 rounded-md shadow-lg">
-                    {/* Search input */}
+
                     <div className="p-2 border-b border-gray-200">
                         <input
                             type="text"
