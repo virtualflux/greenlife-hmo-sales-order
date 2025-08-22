@@ -33,9 +33,9 @@ export interface CreateSalesOrder {
 }
 
 export interface CustomField {
-  custom_field_id: number;
-  index: number;
-  label: string;
+  custom_field_id: string;
+  index?: number;
+  label?: string;
   value: string;
 }
 

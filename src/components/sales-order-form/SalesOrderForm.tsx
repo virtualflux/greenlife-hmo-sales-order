@@ -12,7 +12,7 @@ import axios from 'axios';
 import { LocationData } from '@/types/locations.type';
 import { ICustomers } from '@/types/customers.type';
 import SearchableDropdown from '../utils/SearchAbleDropdown';
-import { CreateSalesOrder } from '@/types/zoho-inventory-create-so.type';
+import { CreateSalesOrder, CustomField } from '@/types/zoho-inventory-create-so.type';
 import { toast } from 'react-toastify';
 import { Contact } from '@/types/get-zoho-inventory-customer.type';
 import useGetAllContacts from '@/utils/query/get-all-customers-hook.query';
@@ -73,7 +73,7 @@ const SalesOrderForm = () => {
         // })
         // console.log({ shouldDeleteIds })
 
-        console.log(customersTracker);
+        // console.log(customersTracker);
 
         return availableContacts;
     };
@@ -89,14 +89,18 @@ const SalesOrderForm = () => {
             date: DateHelper.getCurrentDate({ asString: true }),
             location: '',
             drugs: [],
-            customer: ''
+            customer: '',
+            enrolleeName: "",
+            enrolleeID: ""
         },
         onSubmit: (value) => {
             console.log("Submitting form"),
                 console.log(value)
             handleSubmit(value).then(res => {
                 console.log(res)
-            }).catch(error => console.log(error))
+            }).catch(error => console.log(error)).finally(() => {
+                form.resetForm()
+            })
         }
 
     })
@@ -107,6 +111,13 @@ const SalesOrderForm = () => {
             console.error("Please fill in the forms")
             return;
         }
+        const { enrolleeID, enrolleeName } = value
+        const customFields: CustomField[] = [{
+            custom_field_id: "6544164000000575082",
+            value: enrolleeName
+        }, {
+            custom_field_id: "6544164000000591001", value: enrolleeID
+        }]
         try {
             const input: CreateSalesOrder = {
                 customer_id: value.customer,
@@ -120,14 +131,14 @@ const SalesOrderForm = () => {
                     description: item.name,
                     location_id: value.location,
                     item_total: item.price
-                }))
-
+                })),
+                custom_fields: customFields
 
             }
             // console.log({ input })
-            await axios.post("/api/zoho/sales-order", input)
+            // await axios.post("/api/zoho/sales-order", input)
             toast.success("Sales Order was created successfully", { className: "bg-green-700" })
-            form.resetForm()
+
         } catch (error: any) {
             toast.error(error?.message || "Form was not submitted", {})
             console.error(error)
@@ -174,6 +185,7 @@ const SalesOrderForm = () => {
                     <select
                         id="location"
                         name="location"
+                        value={form.values.location}
                         onChange={(e) => form.setFieldValue("location", e.target.value)}
                         className="mt-1 block w-full text-zinc-900 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
                     >
@@ -191,6 +203,40 @@ const SalesOrderForm = () => {
 
                     {form.touched.location && form.errors.location ? (
                         <div className="text-red-500 text-sm">{form.errors.location}</div>
+                    ) : null}
+                </div>
+                <div>
+                    <label htmlFor="date" className="block text-sm font-medium ">
+                        Enrollee Name
+                    </label>
+                    <input
+                        type="text"
+                        id="enrolleeName"
+                        name="enrolleeName"
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        value={form.values.enrolleeName}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                    />
+                    {form.touched.enrolleeName && form.errors.enrolleeName ? (
+                        <div className="text-red-500 text-sm">{form.errors.enrolleeName as string}</div>
+                    ) : null}
+                </div>
+                <div>
+                    <label htmlFor="date" className="block text-sm font-medium ">
+                        Enrollee ID
+                    </label>
+                    <input
+                        type="text"
+                        id="enrolleeID"
+                        name="enrolleeID"
+                        onChange={form.handleChange}
+                        onBlur={form.handleBlur}
+                        value={form.values.enrolleeID}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                    />
+                    {form.touched.enrolleeID && form.errors.enrolleeID ? (
+                        <div className="text-red-500 text-sm">{form.errors.enrolleeID as string}</div>
                     ) : null}
                 </div>
 

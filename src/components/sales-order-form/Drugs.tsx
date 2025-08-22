@@ -18,7 +18,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     const [newDrug, setNewDrug] = useState<Drugs>({
         name: '',
         id: '',
-        quantity: 0,
+        quantity: 1,
         price: 0,
         unit: 0,
 
@@ -63,7 +63,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
             setNewDrug({
                 name: '',
                 id: '',
-                quantity: 0,
+                quantity: 1,
                 price: 0,
                 unit: 0,
             });
@@ -74,6 +74,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
     };
 
     const handleInventoryItemSelect = async (value: { name: string; id: string }) => {
+        console.log({ selectVal: value })
         setCheckAvailabilty(true)
         const res = await axios.get<{ item: Item }>(`/api/zoho/inventory-item/${value.id}`)
 
@@ -94,7 +95,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
             setNewDrug({
                 name: '',
                 id: '',
-                quantity: 0,
+                quantity: 1,
                 price: 0,
                 unit: 0,
             })
@@ -116,7 +117,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         setNewDrug({
             name: '',
             id: '',
-            quantity: 0,
+            quantity: 1,
             price: 0,
             unit: 0,
         })
@@ -164,9 +165,10 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                         </label>
                         <input
                             type="number"
+                            min={"1"}
                             id="drugQuantity"
                             value={newDrug.quantity}
-                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "0"), price: parseFloat((newDrug.unit * (newDrug.quantity || 1)).toFixed(2)) })}
+                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "1"), price: parseFloat((newDrug.unit * (newDrug.quantity || 1)).toFixed(2)) })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>

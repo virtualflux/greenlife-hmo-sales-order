@@ -35,7 +35,7 @@ export class ZohoTokenHelper {
   }
 
   static isExpiringSoon() {
-    const currentDate = DateHelper.getCurrentDate({}) as Date;
+    const currentDate = new Date();
 
     if (!this.expiryTime) return true;
     const currentTime = currentDate.getTime();

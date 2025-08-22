@@ -6,4 +6,6 @@ export interface SalesOrderFormInput {
   location: string;
   drugs: Drugs[];
   customer: string;
+  enrolleeName: string;
+  enrolleeID: string;
 }

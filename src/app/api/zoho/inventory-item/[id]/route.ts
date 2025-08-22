@@ -10,7 +10,7 @@ export async function GET(
   try {
     const accessToken = await ZohoTokenHelper.getAccessToken();
     const id = (await params).id;
-    console.log({ accessToken });
+    console.log({ id });
     const data = await AxiosService.get<{ item: Item }>(
       `items/${id}?organization_id=${process.env.ZOHO_ORG_ID}`,
       { headers: { Authorization: `Zoho-oauthtoken ${accessToken}` } }
@@ -23,7 +23,7 @@ export async function GET(
       },
       { status: HttpStatusCode.Ok }
     );
-  } catch (error) {
+  } catch (error: any) {
     if (axios.isAxiosError(error)) {
       // This is definitely an Axios error
       console.log("Axios error:", error.response?.data);
@@ -40,7 +40,7 @@ export async function GET(
       );
     }
     return Response.json(
-      { message: "Internal server error" },
+      { message: error?.message || "Internal server error" },
       { status: HttpStatusCode.InternalServerError }
     );
   }
