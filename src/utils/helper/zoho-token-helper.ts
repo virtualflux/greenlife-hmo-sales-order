@@ -9,8 +9,7 @@ export class ZohoTokenHelper {
   private static refreshThreshold = 30 * 1000;
 
   static async getAccessToken() {
-    // if (this.accessToken || !this.isExpiringSoon()) return this.accessToken;
-    if (!this.accessToken) {
+    if (!this.accessToken || this.isExpiringSoon()) {
       // try {
       // } catch (error) {
       //   console.log(error);
@@ -27,7 +26,9 @@ export class ZohoTokenHelper {
       );
 
       this.accessToken = response.data.access_token;
-      this.expiryTime = response.data.expires_in;
+
+      const currentTime = Date.now();
+      this.expiryTime = currentTime + response.data.expires_in * 1000;
       return this.accessToken;
     }
     return this.accessToken;
