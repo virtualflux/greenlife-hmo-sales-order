@@ -113,6 +113,11 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
         form.setFieldValue('drugs', newDrugs);
     };
 
+    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let quantityVal = parseInt(e.target.value)
+        setNewDrug(prev => ({ ...prev, quantity: quantityVal, price: parseFloat((newDrug.unit * quantityVal).toFixed(2)) }))
+    }
+
     useEffect(() => {
         setNewDrug({
             name: '',
@@ -168,7 +173,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                             min={"1"}
                             id="drugQuantity"
                             value={newDrug.quantity}
-                            onChange={(e) => setNewDrug({ ...newDrug, quantity: parseInt(e.target.value || "1"), price: parseFloat((newDrug.unit * (newDrug.quantity || 1)).toFixed(2)) })}
+                            onChange={handleQuantityChange}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>
@@ -181,7 +186,7 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                             disabled
                             id="drugPrice"
                             value={newDrug.price}
-                            onChange={(e) => setNewDrug({ ...newDrug, price: parseFloat(e.target.value || "0") })}
+                            // onChange={(e) => setNewDrug({ ...newDrug, price: parseFloat(e.target.value || "0") })}
                             className="mt-1 bg-gray-300 cursor-not-allowed block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border text-sm"
                         />
                     </div>
