@@ -230,13 +230,13 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                                 <div className="col-span-2 text-center text-sm font-mono">
                                     ₦{(drug.price).toFixed(2)}
                                 </div>
-                                <div className="col-span-2 text-center inline-block">
+                                <div className="col-span-2 text-right inline-block">
                                     <button
                                         type="button"
                                         onClick={() => removeDrug(index)}
-                                        className="text-red-500 text-xs hover:text-red-700 px-2 py-1 border border-red-200 rounded hover:bg-red-50 hover:-ml-6 transition-all"
+                                        className="text-red-500 text-xs hover:text-red-700 px-2 py-1 border border-red-200 rounded hover:bg-red-50 hover:scale-150 transition-all inline-block"
                                     >
-                                        <i className="fi fi-rr-trash"></i>
+                                        <i className="fi fi-sr-trash"></i>
                                     </button>
                                 </div>
                             </div>
