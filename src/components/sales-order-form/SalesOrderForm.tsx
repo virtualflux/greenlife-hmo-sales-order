@@ -108,7 +108,7 @@ const SalesOrderForm = () => {
 
     const handleSubmit = async (value: SalesOrderFormInput) => {
         if (!value.customer || !value.location || !value.drugs.length) {
-            console.error("Please fill in the forms")
+            console.log("Please fill in the forms")
             toast.warn("Please fill the compulsory form fields")
             return;
         }
