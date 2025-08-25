@@ -18,6 +18,7 @@ import { Contact } from '@/types/get-zoho-inventory-customer.type';
 import useGetAllContacts from '@/utils/query/get-all-customers-hook.query';
 
 const SalesOrderForm = () => {
+    const [loading, setLoading] = useState(false)
 
     const getLocation = async () => {
         const response = await axios.get<LocationData>('/api/zoho/location')
@@ -107,6 +108,7 @@ const SalesOrderForm = () => {
 
 
     const handleSubmit = async (value: SalesOrderFormInput) => {
+        setLoading(true)
         if (!value.customer || !value.location || !value.drugs.length) {
             console.log("Please fill in the forms")
             toast.warn("Please fill the compulsory form fields")
@@ -115,9 +117,11 @@ const SalesOrderForm = () => {
         const { enrolleeID, enrolleeName } = value
         const customFields: CustomField[] = [{
             custom_field_id: "6544164000000575082",
+            label: "Customer Patient Name",
             value: enrolleeName
         }, {
             custom_field_id: "6544164000000591001", value: enrolleeID
+            , label: "Enrollee ID",
         }]
         try {
             const input: CreateSalesOrder = {
@@ -142,7 +146,10 @@ const SalesOrderForm = () => {
 
         } catch (error: any) {
             toast.error(error?.message || "Form was not submitted", {})
-            console.error(error)
+            console.log(error)
+        }
+        finally {
+            setLoading(false)
         }
     }
 
@@ -263,12 +270,18 @@ const SalesOrderForm = () => {
                 <DrugsComponent form={form} />
 
                 <Link href='/contacts' className='underline'>Upload Customer Data</Link>
-                <div className="pt-4">
+                <div className="pt-4" >
                     <button
+                        disabled={loading}
                         type="submit"
                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 hover:scale-100"
                     >
-                        Submit Order
+                        {loading ? <span className=''><svg className="mr-3 size-5 animate-spin" viewBox="0 0 24 24" fill="none">
+
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg></span> : "Submit Order"}
                     </button>
                 </div>
             </form>
