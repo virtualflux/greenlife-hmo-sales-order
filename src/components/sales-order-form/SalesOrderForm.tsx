@@ -107,8 +107,9 @@ const SalesOrderForm = () => {
 
 
     const handleSubmit = async (value: SalesOrderFormInput) => {
-        if (!value.customer || !value.location || !value.drugs) {
+        if (!value.customer || !value.location || !value.drugs.length) {
             console.error("Please fill in the forms")
+            toast.warn("Please fill the compulsory form fields")
             return;
         }
         const { enrolleeID, enrolleeName } = value
@@ -136,7 +137,7 @@ const SalesOrderForm = () => {
 
             }
             // console.log({ input })
-            // await axios.post("/api/zoho/sales-order", input)
+            await axios.post("/api/zoho/sales-order", input)
             toast.success("Sales Order was created successfully", { className: "bg-green-700" })
 
         } catch (error: any) {
