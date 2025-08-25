@@ -182,7 +182,7 @@ const SalesOrderForm = () => {
                 </div>
 
                 <div>
-                    <label htmlFor="location" className="block text-sm font-medium">
+                    <label htmlFor="location" className="inline-flex text-sm font-medium">
                         Location
                         <span className=' text-sm block'><p className='text-red-800'>
                             *</p></span>
