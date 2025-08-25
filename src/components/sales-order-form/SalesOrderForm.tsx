@@ -161,10 +161,13 @@ const SalesOrderForm = () => {
             <form onSubmit={form.handleSubmit} className="space-y-2">
 
                 <div>
-                    <label htmlFor="date" className="block text-sm font-medium ">
+                    <label htmlFor="date" className="inline-flex text-sm font-medium ">
                         Date
+                        <span className=' text-sm block'><p className='text-red-800'>
+                            *</p></span>
                     </label>
                     <input
+                        required
                         type="date"
                         id="date"
                         name="date"
@@ -181,8 +184,11 @@ const SalesOrderForm = () => {
                 <div>
                     <label htmlFor="location" className="block text-sm font-medium">
                         Location
+                        <span className=' text-sm block'><p className='text-red-800'>
+                            *</p></span>
                     </label>
                     <select
+                        required
                         id="location"
                         name="location"
                         value={form.values.location}

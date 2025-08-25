@@ -7,7 +7,9 @@ const SearchableDropdown = ({
     onSelect,
     placeholder = "Select an item",
     loadingText = "Loading...",
-    noOptionsText = "No options available", disabled = false,
+    noOptionsText = "No options available",
+    disabled = false,
+    required
 }: {
     value: string
     data: { name: string; value: any }[]; isLoading?: boolean; onSelect: (value: { name: string; value: any }) => void;
@@ -15,6 +17,7 @@ const SearchableDropdown = ({
     loadingText?: string;
     noOptionsText?: string;
     disabled?: boolean
+    required?: boolean
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -66,6 +69,13 @@ const SearchableDropdown = ({
         if (disabled) return;
         setIsOpen(!isOpen);
     };
+
+    useEffect(() => {
+        if (value == "") {
+            setSearchTerm("")
+            setSelectedOption({ name: "", value: "" })
+        }
+    }, [value])
 
     return (
         <div className="relative w-full" ref={dropdownRef}>

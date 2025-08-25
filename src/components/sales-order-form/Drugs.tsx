@@ -142,14 +142,18 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form }) => {
                 <h4 className="font-medium">Add New Drug</h4>
                 <div className="grid grid-cols-2 gap-2">
                     <div className='col-span-2'>
-                        <label htmlFor="inventoryItemName" className="block text-sm font-medium ">
+                        <label htmlFor="inventoryItemName" className="inline-flex text-sm font-medium w-full">
                             Select Item from Inventory
+
+                            <span className=' text-sm block'><p className='text-red-800'>
+                                *</p></span>
                         </label>
+
                         <SearchableDropdown value={newDrug.id} isLoading={isLoading} data={inventoryItems ? inventoryItems.map(item => ({ name: item.name, value: item.item_id })) : []} onSelect={(value) => { handleInventoryItemSelect({ name: value.name, id: value.value }) }} placeholder='Select item from inventory' />
                         <span className='h-2 w-full'>{checkingAvailability == true &&
                             <p className='text-gray-500 italic text-xs'>Checking item in inventory <span className='text-sm font-semibold loading-ellipses'>...</span></p>
 
-                        }{checkingAvailability == false && newDrug.id && <p className='text-gray-800 italic text-sm'>Available stock: {inventoryDrug.locationQty}</p>}</span>
+                        }{newDrug.id && checkingAvailability == false && newDrug.id && <p className='text-gray-800 italic text-sm'>Available stock: {inventoryDrug.locationQty}</p>}</span>
                     </div>
                     <div className='col-span-2'>
                         <label htmlFor="customerItemName" className="block text-sm font-medium ">
