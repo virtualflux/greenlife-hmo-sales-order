@@ -5,7 +5,11 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SearchableDropdown from "@/components/utils/SearchAbleDropdown";
-import { ICustomers } from "@/types/customers.type";
+
+interface ICustomers {
+  contact_name: string;
+  contact_id: string;
+}
 
 export default function UploadCsvPage() {
   const [csvFile, setCsvFile] = useState<File | null>(null);
@@ -14,9 +18,7 @@ export default function UploadCsvPage() {
   const [hmoName, setHmoName] = useState<string | null>(null);
 
   const getCustomers = async () => {
-    const response = await axios.get<{ customers: ICustomers[] }>(
-      "/api/db/customer"
-    );
+    const response = await axios.get<any[]>("/api/zoho/contacts");
     return response.data ?? [];
   };
 
@@ -80,15 +82,15 @@ export default function UploadCsvPage() {
               value={customerId ?? ""}
               data={
                 customers
-                  ? customers.customers.map((c) => ({
-                      name: c.providerName.toUpperCase(),
-                      value: c.zohoInventoryCustomerId,
+                  ? customers.map((c: ICustomers) => ({
+                      name: c.contact_name.toUpperCase(),
+                      value: c.contact_id,
                     }))
                   : []
               }
               onSelect={(value) => {
                 setCustomerId(value.value);
-                setHmoName(value.name)
+                setHmoName(value.name);
               }}
               placeholder="Select Customer"
             />

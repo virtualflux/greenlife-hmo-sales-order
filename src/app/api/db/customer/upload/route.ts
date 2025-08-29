@@ -12,8 +12,6 @@ export async function POST(req: NextRequest) {
     const customerId = formData.get("customerId") as string;
     const hmoName = formData.get("hmoName") as string;
 
-    console.log(11, formData);
-
     if (!file) {
       return Response.json(
         { message: "No file uploaded" },
