@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SearchableDropdown from "@/components/utils/SearchAbleDropdown";
+import Link from "next/link";
 
 interface ICustomers {
   contact_name: string;
@@ -122,6 +123,14 @@ export default function UploadCsvPage() {
           {isUploading ? "Uploading..." : "Upload"}
         </button>
       </form>
+
+      <Link
+        href="/sample-procedures.csv"
+        download
+        className="relative top-4 text-blue-600 underline hover:text-blue-800"
+      >
+        Download CSV Template
+      </Link>
     </div>
   );
 }
