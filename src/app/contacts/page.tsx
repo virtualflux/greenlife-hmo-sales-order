@@ -2,31 +2,17 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SearchableDropdown from "@/components/utils/SearchAbleDropdown";
 import Link from "next/link";
-
-interface ICustomers {
-  contact_name: string;
-  contact_id: string;
-}
+import Customer from "@/components/customer/Customer";
 
 export default function UploadCsvPage() {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [hmoName, setHmoName] = useState<string | null>(null);
-
-  const getCustomers = async () => {
-    const response = await axios.get<any[]>("/api/zoho/contacts");
-    return response.data ?? [];
-  };
-
-  const { data: customers, isLoading } = useQuery({
-    queryKey: ["customers"],
-    queryFn: getCustomers,
-  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -42,7 +28,8 @@ export default function UploadCsvPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!csvFile || !customerId || !hmoName) {
+    console.log({ csvFile, customerId, hmoName });
+    if (!csvFile || !customerId) {
       alert("Please select a customer and upload a CSV file.");
       return;
     }
@@ -50,7 +37,7 @@ export default function UploadCsvPage() {
     const formData = new FormData();
     formData.append("file", csvFile);
     formData.append("customerId", customerId);
-    formData.append("hmoName", hmoName);
+    formData.append("hmoName", hmoName ?? "");
 
     setIsUploading(true);
     try {
@@ -67,6 +54,15 @@ export default function UploadCsvPage() {
     }
   };
 
+  const handleSelectCustomer = (
+    customerId: string,
+    customerType: "private" | "hmo",
+    name: string
+  ) => {
+    console.log("field value has been set: ", customerId);
+    setCustomerId(customerId);
+    setHmoName(name);
+  };
   return (
     <div className="p-8 max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-6">Upload CSV for Customer</h1>
@@ -76,26 +72,27 @@ export default function UploadCsvPage() {
           <label htmlFor="customer" className="block text-sm font-medium mb-1">
             Customer
           </label>
-          {isLoading ? (
-            <p className="text-sm text-gray-500">Loading customers...</p>
-          ) : (
-            <SearchableDropdown
-              value={customerId ?? ""}
-              data={
-                customers
-                  ? customers.map((c: ICustomers) => ({
-                      name: c.contact_name.toUpperCase(),
-                      value: c.contact_id,
-                    }))
-                  : []
-              }
-              onSelect={(value) => {
-                setCustomerId(value.value);
-                setHmoName(value.name);
-              }}
-              placeholder="Select Customer"
+
+          {
+            // <SearchableDropdown
+            //   value={customerId ?? ""}
+            //   data={
+            //     customers
+            //       ? customers.map((c: ICustomers) => ({
+            //           name: c.contact_name?.toUpperCase(),
+            //           value: c.contact_id,
+            //         }))
+            //       : []
+            //   }
+            //   onSelect={handleSelectCustomer}
+            //   placeholder="Select Customer"
+            // />
+            <Customer
+              customerType="hmo"
+              value={customerId as string}
+              handleSelectCustomer={handleSelectCustomer}
             />
-          )}
+          }
         </div>
 
         <div>
@@ -107,13 +104,13 @@ export default function UploadCsvPage() {
               type="file"
               accept=".csv,.xlsx"
               onChange={handleFileChange}
-              className="mb-4"
+              className="mb-4 w-full"
             />
           </span>
         </div>
 
         <button
-          disabled={!csvFile || isLoading || isUploading}
+          disabled={!csvFile || isUploading}
           type="submit"
           className={
             `px-4 py-2 bg-blue-600 text-white rounded-md` +

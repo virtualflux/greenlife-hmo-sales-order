@@ -2,6 +2,7 @@ export interface ZohoInventoryCustomer {
   code: number;
   message: string;
   contacts: Contact[];
+  contact: Contact;
 }
 
 export interface Contact {
