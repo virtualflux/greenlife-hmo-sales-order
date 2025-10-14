@@ -62,11 +62,19 @@ export async function POST(req: NextRequest) {
       hmo = { ...newHmo, _id: insertResult.insertedId };
     }
 
-    const preparedProcedures = rows.map((row) => ({
-      ...row,
-      hmo: new mongo.ObjectId(hmo._id),
-      createdAt: new Date(),
-    }));
+    const preparedProcedures = rows.map((row) => {
+      const rate = row.tariffRate;
+      const name = row.procedureName;
+      delete row.tariffRate;
+      delete row.procedureName;
+      return {
+        ...row,
+        name,
+        rate: +rate,
+        hmo: new mongo.ObjectId(hmo._id),
+        createdAt: new Date(),
+      };
+    });
 
     await db.collection("procedures").deleteMany({
       hmo: new mongo.ObjectId(hmo._id),

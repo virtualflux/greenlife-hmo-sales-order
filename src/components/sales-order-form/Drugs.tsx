@@ -67,11 +67,12 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form, customerType }) => {
       const selectedCustomer = customers?.customers.find(
         (customer) => customer.zohoInventoryCustomerId == form.values.customer
       );
+
       if (selectedCustomer?._id && isValidObjectId(selectedCustomer?._id)) {
         const res = await axios.get<IProcedure[]>(
           `/api/db/drugs?customer=${selectedCustomer?._id}`
         );
-        // console.log({ data: res.data })
+        // console.log({ data: res.data });
         return res?.data ?? [];
       }
       return [];
@@ -255,10 +256,9 @@ const DrugsComponent: React.FC<IDrugComponent> = ({ form, customerType }) => {
                 isLoading={isLoading}
                 data={
                   drugs
-                    ? drugs.map((item) => ({
-                        name: item.name,
-                        value: item._id,
-                      }))
+                    ? drugs.map((item) => {
+                        return { name: item.name, value: item._id };
+                      })
                     : []
                 }
                 onSelect={(value) => {

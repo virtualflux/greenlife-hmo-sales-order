@@ -78,13 +78,19 @@ const Customer = ({
       });
     }
 
-    //TODO: DEACTIVATE CUSTOMERS IN DATABASE THAT ARE NOT IN ZOHO INVENTORY
-    // const shouldDeleteIds = Object.entries(customersTracker).map(([key, value]) => {
-    //     if (value == 1) return key
-    // })
-    // console.log({ shouldDeleteIds })
+    // TODO: DEACTIVATE CUSTOMERS IN DATABASE THAT ARE NOT IN ZOHO INVENTORY
+    const shouldDeleteIds = Object.entries(customersTracker)
+      .map(([key, value]) => {
+        if (value == 1) return key;
+      })
+      .filter((item) => !!item);
+    console.log({ shouldDeleteIds });
 
-    // console.log(customersTracker);
+    if (shouldDeleteIds.length) {
+      await axios.delete("/api/db/customer", {
+        data: { deleteIds: shouldDeleteIds },
+      });
+    }
 
     return availableContacts;
   };
