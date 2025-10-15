@@ -141,32 +141,32 @@ const Customer = ({
 
         delete data.nextOfKin;
 
-        // await axios
-        //   .post("/api/zoho/contacts", data)
-        //   .then((res) => {
-        //     console.log(res);
+        await axios
+          .post("/api/zoho/contacts", data)
+          .then((res) => {
+            console.log(res);
 
-        //     handleSelectCustomer(
-        //       res.data?.contact_id,
-        //       customerType,
-        //       res.data?.contact_name
-        //     );
-        //     setNewValue(res.data.contact_id);
-        //     setCreateCustomer(false);
-        //     refetch();
+            handleSelectCustomer(
+              res.data?.contact_id,
+              customerType,
+              res.data?.contact_name
+            );
+            setNewValue(res.data.contact_id);
+            setCreateCustomer(false);
+            refetch();
 
-        //     toast.success("Customer added successfully");
-        //   })
-        //   .catch((error) => {
-        //     if (axios.isAxiosError(error)) {
-        //       const message = error.response?.data?.message || error.message;
-        //       toast.error(message);
-        //       return;
-        //     }
-        //     toast.error("Could not submit form , Please try again");
-        //   });
+            toast.success("Customer added successfully");
+          })
+          .catch((error) => {
+            if (axios.isAxiosError(error)) {
+              const message = error.response?.data?.message || error.message;
+              toast.error(message);
+              return;
+            }
+            toast.error("Could not submit form , Please try again");
+          });
 
-        // resetForm();
+        resetForm();
       } catch (error) {
         console.error("Error creating customer:", error);
       } finally {
