@@ -133,6 +133,7 @@ const Customer = ({
         if (values.nextOfKin) {
           data.custom_fields = [
             {
+              custom_field_id: "6544164000000750322",
               label: "Next Of Kin",
               value: values.nextOfKin,
             },

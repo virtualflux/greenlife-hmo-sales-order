@@ -237,6 +237,44 @@ const SalesOrderForm = () => {
                 ) : null}
               </div>
               <DrugsComponent form={form} customerType="hmo" />
+              <div>
+                <label htmlFor="date" className="block text-sm font-medium ">
+                  Enrollee Name
+                </label>
+                <input
+                  type="text"
+                  id="enrolleeName"
+                  name="enrolleeName"
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.enrolleeName}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                />
+                {form.touched.enrolleeName && form.errors.enrolleeName ? (
+                  <div className="text-red-500 text-sm">
+                    {form.errors.enrolleeName as string}
+                  </div>
+                ) : null}
+              </div>
+              <div>
+                <label htmlFor="date" className="block text-sm font-medium ">
+                  Enrollee ID
+                </label>
+                <input
+                  type="text"
+                  id="enrolleeID"
+                  name="enrolleeID"
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.enrolleeID}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                />
+                {form.touched.enrolleeID && form.errors.enrolleeID ? (
+                  <div className="text-red-500 text-sm">
+                    {form.errors.enrolleeID as string}
+                  </div>
+                ) : null}
+              </div>
             </TabsContent>
             <TabsContent value="private">
               <div>
@@ -273,44 +311,6 @@ const SalesOrderForm = () => {
               <DrugsComponent form={form} customerType="private" />
             </TabsContent>
           </Tabs>
-          {/* <div>
-            <label htmlFor="date" className="block text-sm font-medium ">
-              Enrollee Name
-            </label>
-            <input
-              type="text"
-              id="enrolleeName"
-              name="enrolleeName"
-              onChange={form.handleChange}
-              onBlur={form.handleBlur}
-              value={form.values.enrolleeName}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-            />
-            {form.touched.enrolleeName && form.errors.enrolleeName ? (
-              <div className="text-red-500 text-sm">
-                {form.errors.enrolleeName as string}
-              </div>
-            ) : null}
-          </div> */}
-          {/* <div>
-            <label htmlFor="date" className="block text-sm font-medium ">
-              Enrollee ID
-            </label>
-            <input
-              type="text"
-              id="enrolleeID"
-              name="enrolleeID"
-              onChange={form.handleChange}
-              onBlur={form.handleBlur}
-              value={form.values.enrolleeID}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-            />
-            {form.touched.enrolleeID && form.errors.enrolleeID ? (
-              <div className="text-red-500 text-sm">
-                {form.errors.enrolleeID as string}
-              </div>
-            ) : null}
-          </div> */}
         </div>
         <Link href="/contacts" className="underline">
           Upload Customer Data
