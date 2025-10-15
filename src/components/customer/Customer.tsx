@@ -133,7 +133,7 @@ const Customer = ({
         if (values.nextOfKin) {
           data.custom_fields = [
             {
-              label: "",
+              label: "Next Of Kin",
               value: values.nextOfKin,
             },
           ] as any;
