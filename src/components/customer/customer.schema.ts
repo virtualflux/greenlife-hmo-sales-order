@@ -25,6 +25,11 @@ export const customerSchema = z.object({
     .string({ message: "Company name is required" })
     .max(100, "Company name must be 100 characters or less")
     .optional(),
+  billing_address: z
+    .string()
+    .min(5, { message: "Address too short" })
+    .optional(),
+  nextOfKin: z.string().optional(),
   contact_name: z
     .string({ message: "Please enter a customer name" })
     .min(1, "Contact name is required")
